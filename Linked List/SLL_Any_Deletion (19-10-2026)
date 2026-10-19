@@ -1,0 +1,180 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Node{
+    int data;
+    struct Node* next;
+};
+
+struct Node* createNode(int value){
+    struct Node* newNode=malloc(sizeof(struct Node));
+
+    if(newNode==NULL){
+        printf("Memory Allocation Failed\n");
+        exit(1);
+    }
+    newNode->data=value;
+    newNode->next=NULL;
+    return newNode;
+}
+
+void deleteAtBeginning(struct Node** head){
+    if(*head==NULL){
+        printf("List is Empty\n");
+        return;
+    }
+    struct Node* temp=*head;
+    *head=(*head)->next;
+    free(temp); 
+    printf("Node delete\n");
+}
+void deleteAtEnd(struct Node** head){
+    if(*head==NULL){
+        printf("List is Empty\n");
+        return;
+    }
+    struct Node* temp=*head;
+    if(temp->next==NULL){
+        free(*head);
+        *head=NULL;
+        printf("Node deleted\n");
+        return;
+    }
+    while(temp->next->next!=NULL){
+        temp=temp->next;
+    }
+    struct Node* q=temp->next;
+    temp->next=NULL;
+    free(q);
+    printf("Node delete\n");
+}
+
+void deleteAtPosition(struct Node** head,int pos){
+    if(*head==NULL || pos<1){
+        printf("Invalid Position or Empty List\n");
+        return;
+    }
+    if(pos==1){
+        deleteAtBeginning(head);
+        return;
+    }
+    struct Node* temp=*head;
+    for(int i=1;i<pos-1 && temp!=NULL;i++){
+        temp=temp->next;
+    }
+    if(temp==NULL || temp->next==NULL){
+        printf("Invalid position\n");
+        return;
+    }
+    struct Node* q=temp->next;
+    temp->next=q->next;
+    free(q);
+    printf("Node deleted\n");
+}
+
+void deleteAtValue(struct Node** head, int value) {
+    if (*head == NULL) {
+        printf("List is Empty\n");
+        return;
+    }
+    struct Node* temp = *head;
+    if (temp->data == value) {
+        deleteAtBeginning(head);
+        return;
+    }
+    while (temp->next != NULL && temp->next->data != value) {
+        temp = temp->next;
+    }
+    if (temp->next == NULL) {
+        printf("Value not found\n");
+        return;
+    }
+    struct Node* q = temp->next;
+    temp->next = q->next;
+    free(q);
+    printf("Node deleted\n");
+}
+
+void display(struct Node* head){
+    struct Node* temp=head;
+    printf("Linked List\n");
+    while(temp!=NULL){
+        printf("%d -> ",temp->data);
+        temp=temp->next;
+    }
+    printf("NULL");
+}
+
+int main() {
+    struct Node* head=NULL;
+    struct Node* tail=NULL;
+    int choice,value,pos,n;
+
+    printf("Enter number of elements: ");
+    if(scanf("%d",&n)!=1 || n<0){
+        printf("Invalid Input\n");
+        return 1;
+    }
+    if(n>0){
+        printf("Enter Elements\n");
+        for(int i=0;i<n;i++){
+            if(scanf("%d",&value)!=1){
+                printf("Invalid Input\n");
+                return 1;
+            }
+            struct Node* newNode=createNode(value);
+            if(head==NULL){
+                head=newNode;
+                tail=newNode;
+            }else{
+                tail->next=newNode;
+                tail=newNode;
+            }
+        }
+    }
+    while (1) {
+        printf("\n1.Delete from Beginning\n");
+        printf("2.Delete from End\n");
+        printf("3.Delete from Position\n");
+        printf("4.Delete value\n");
+        printf("5.Display\n");
+        printf("6.Exit\n");
+        printf("Enter choice: ");
+        if(scanf("%d",&choice)!=1) break;
+        
+        switch (choice) {
+            case 1:
+                deleteAtBeginning(&head);
+                display(head);
+                break;
+            case 2:
+                deleteAtEnd(&head);
+                display(head);
+                break;
+            case 3:
+                printf("Enter position: ");
+                scanf("%d",&pos);
+                deleteAtPosition(&head,pos);
+                display(head);
+                break;
+            case 4:
+                printf("Enter value: ");
+                scanf("%d",&value);
+                deleteAtValue(&head,value);
+                display(head);
+                break;
+            case 5:
+                display(head);
+                break;
+            case 6:
+                while (head != NULL) {
+                    struct Node* temp = head;
+                    head = head->next;
+                    free(temp);
+                }
+                return 0;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+}
