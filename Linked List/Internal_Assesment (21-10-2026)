@@ -1,0 +1,149 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+struct Node *head = NULL;
+
+void insert(int data, int pos) {
+    struct Node *newNode, *temp;
+    int i;
+
+    newNode = (struct Node *)malloc(sizeof(struct Node));
+
+    if (newNode == NULL) {
+        printf("Memory allocation failed!\n");
+        return;
+    }
+
+    newNode->data = data;
+    newNode->next = NULL;
+
+    if (pos == 1) {
+        newNode->next = head;
+        head = newNode;
+        return;
+    }
+
+    temp = head;
+
+    for (i = 1; temp != NULL && i < pos - 1; i++) {
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Invalid position!\n");
+        free(newNode);
+        return;
+    }
+
+    newNode->next = temp->next;
+    temp->next = newNode;
+}
+
+void deleteNode(int pos) {
+    struct Node *temp = head;
+    struct Node *toDelete;
+    int i;
+
+    if (head == NULL || pos < 1) {
+        printf("List is empty or position is invalid!\n");
+        return;
+    }
+
+    if (pos == 1) {
+        head = head->next;
+        free(temp);
+        return;
+    }
+
+    for (i = 1; temp != NULL && i < pos - 1; i++) {
+        temp = temp->next;
+    }
+
+    if (temp == NULL || temp->next == NULL) {
+        printf("Invalid position!\n");
+        return;
+    }
+
+    toDelete = temp->next;
+    temp->next = toDelete->next;
+    free(toDelete);
+}
+
+void traverse() {
+    struct Node *temp = head;
+
+    if (temp == NULL) {
+        printf("Linked List: Empty\n");
+        return;
+    }
+
+    printf("Linked List: ");
+
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+
+    printf("NULL\n");
+}
+
+int main() {
+    int choice, data, pos;
+
+    while (1) {
+        printf("\n--- Singly Linked List ---\n");
+        printf("1. Insert\n");
+        printf("2. Delete\n");
+        printf("3. Traverse\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input!\n");
+            break;
+        }
+        switch (choice) {
+            case 1:
+                printf("Enter data: ");
+                if (scanf("%d", &data) != 1) {
+                    printf("Invalid input!\n");
+                    return 1;
+                }
+                printf("Enter position: ");
+                if (scanf("%d", &pos) != 1) {
+                    printf("Invalid input!\n");
+                    return 1;
+                }
+                insert(data, pos);
+                printf("After insertion:\n");
+                traverse();
+                break;
+            case 2:
+                printf("Enter position to delete: ");
+                if (scanf("%d", &pos) != 1) {
+                    printf("Invalid input!\n");
+                    return 1;
+                }
+                deleteNode(pos);
+                printf("After deletion:\n");
+                traverse();
+                break;
+            case 3:
+                printf("Displaying Linked List:\n");
+                traverse();
+                break;
+            case 4:
+                printf("Exiting program...\n");
+                return 0;
+            default:
+                printf("Invalid choice!\n");
+                traverse();
+        }
+    }
+    return 0;
+}
